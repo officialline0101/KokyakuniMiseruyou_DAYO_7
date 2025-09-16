@@ -1156,17 +1156,6 @@
             </div>
         </div>
 
-        <!-- 第三希望日時 -->
-        <div class="labelkibounitizi">第三希望日時<span class="required">必須</span></div>
-        <div class="datetime-wrapper" style="text-align: center;">
-            <span class="placeholder" id="placeholder3">⇩タップして日時を入力⇩</span>
-            <input type="hidden" id="date3" name="date3">
-            <div class="dt-grid">
-                <select id="date3_day" class="datetime-input" aria-label="日付を選択"></select>
-                <select id="date3_time" class="datetime-input" aria-label="時間（00/30のみ）"></select>
-            </div>
-        </div>
-
         <div class="labelmessezi">メッセージ<br>（質問等お気軽にご記入ください）</div>
         <textarea id="message" rows="4" placeholder="メッセージを入力してください"></textarea>
 
@@ -1191,7 +1180,7 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             liff.init({
-                liffId: '2008094613-W5pErdRR'
+                liffId: '2005254357-zKma9BZk'
             }).then(() => {
                 console.log('LIFF初期化成功');
             }).catch((err) => {
@@ -1361,13 +1350,6 @@
                 ? `・<span style="color:#a67b5b;"><strong>第2希望日</strong></span><br>${formatDateTime(selectedDate2)}`
                 : '・第2希望日が未選択です';
 
-            // 第3希望日が選択された場合の表示
-            const selectedDate3 = document.getElementById('date3').value;
-            const selectedDate3Text = selectedDate3
-                ? `・<span style="color:#a67b5b;"><strong>第3希望日</strong></span><br>${formatDateTime(selectedDate3)}`
-                : '・第3希望日が未選択です';
-
-
             // 修正ボタン付きのHTMLを作成
             document.getElementById('displayInfo').innerHTML = `
         <div class="info-row">
@@ -1393,11 +1375,6 @@
         <div class="info-row">
             <p>${selectedDate2Text}</p>
             <button class="edit-button" onclick="scrollToElement('placeholder2')">修正</button>
-        </div>
-        <hr>
-        <div class="info-row">
-            <p>${selectedDate3Text}</p>
-            <button class="edit-button" onclick="scrollToElement('placeholder3')">修正</button>
         </div>
         <hr>
     `;
@@ -1429,7 +1406,6 @@
         // 第一希望日、第二希望日、第三希望日でupdateDisplayInfoを呼び出す
         document.getElementById('date1').addEventListener('change', updateDisplayInfo);
         document.getElementById('date2').addEventListener('change', updateDisplayInfo);
-        document.getElementById('date3').addEventListener('change', updateDisplayInfo);
 
         document.querySelectorAll('.symptoms button').forEach(button => {
             button.addEventListener('click', () => {
@@ -1589,7 +1565,7 @@ function buildHalfHourOptions(selectEl, weekday) {
         }
 
         // 3つ分を初期化
-        ['date1', 'date2', 'date3'].forEach(id => initPicker(id, 120));
+        ['date1', 'date2'].forEach(id => initPicker(id, 120));
 
         function selectSymptom(button, treatmentId) {
             // 選択された日時をリセット
@@ -1889,8 +1865,7 @@ function autoSelectDefaultSymptom(menuId) {
                 irradiationsCount: irradiationsCount,
                 dates: [
                     document.getElementById('date1').value,
-                    document.getElementById('date2').value,
-                    document.getElementById('date3').value
+                    document.getElementById('date2').value
                 ],
                 message: document.getElementById('message').value.trim()
             };
@@ -1912,14 +1887,19 @@ function autoSelectDefaultSymptom(menuId) {
             }
 
             if (!formData.dates[0]) {
-                alert('第1希望日※必須を選択してください。');
+                alert('第1希望日を選択してください。');
+                return;
+            }
+
+            if (!formData.dates[1]) {
+                alert('第2希望日を選択してください。');
                 return;
             }
 
             // LINEトークにメッセージを送信
             liff.sendMessages([{
                 type: 'text',
-                text: `【予約情報】\n《お名前》${formData.name}\n《電話番号》${formData.phone}\n\n《コース》：${formData.selectedMenu}\n《メニュー》：${formData.selectedMenu}\n\n【希望日時】\n《第一希望日》\n${formatDate(formData.dates[0])}\n\n《第二希望日》\n${formatDate(formData.dates[1])}\n\n《第三希望日》\n${formatDate(formData.dates[2])}\n\n《メッセージ》\n${formData.message}`
+                text: `【予約情報】\n《お名前》${formData.name}\n《電話番号》${formData.phone}\n\n《コース》：${formData.selectedMenu}\n《メニュー》：${formData.selectedMenu}\n\n【希望日時】\n《第一希望日》\n${formatDate(formData.dates[0])}\n\n《第二希望日》\n${formatDate(formData.dates[1])}\n\n《メッセージ》\n${formData.message}`
             }]).then(() => {
                 /* メッセージ送信成功時の処理 */
                 alert('確認してご連絡差し上げます。');
